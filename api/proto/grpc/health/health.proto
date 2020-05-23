@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package health;
+
+option go_package = "github.com/goibibo/intent-score/pkg/api/grpc/health";
+
+message HealthCheck {
+    string value = 1;
+}
