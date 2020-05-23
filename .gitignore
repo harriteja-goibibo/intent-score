@@ -1,0 +1,15 @@
+*.sublime-*
+bin/*
+*.pyc
+*.log
+.idea/*
+.DS_Store
+easyjson-bootstrap*.go
+logs/*
+*.iml
+vendor/pkg/*
+coverage.txt
+.cover
+*.patch
+*.prof
+*.test

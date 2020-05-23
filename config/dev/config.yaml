@@ -1,0 +1,10 @@
+# YAML is a superset of json. So by default it supports json.
+# IMO yaml acts as a better config than json.
+# Extra features: Comments, Anchors & Inheritance.
+# Viper also supports YAML.
+settings:
+  server:
+    host: 0.0.0.0:8065
+  logger:
+    info:  "/logs/intent-score/info.log"
+    error: "/logs/intent-score/error.log"
