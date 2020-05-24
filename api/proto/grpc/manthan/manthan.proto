@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package manthan;
+import "api/proto/common/common.proto";
+
+
+option go_package = "github.com/goibibo/intent-score/pkg/api/grpc/manthan";
+
+message ManthanRealTimeData {
+    common.Vertical vertical = 1;
+    common.Org org = 2;
+    common.PageHitType page_type = 3;
+    // Format YYYYMMDDHHMMSS
+    string request_date = 4;
+    string user_id = 5;
+    // Hotels, Experiences --> cityId
+    // Bus, Flgits, Cars, Trains --> srcId-destId
+    string entity_id = 6;
+    // Format YYYYMMDD
+    string travel_start_date = 7;
+    // Format YYYYMMDD
+    string travel_end_date = 8;
+    int64 room_nights = 9;
+}

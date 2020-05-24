@@ -49,15 +49,16 @@ func createServerConfig(cfgPath string) (*serverImpl.ServerConfig, string) {
 	conf := getConfig(cfgPath)
 
 	// Initialise Loggers.
-	serverLogger, err := logger.New("[gRPC-Server]", conf.GetString("settings.logger.info"))
+	serverLogger, err := logger.New("server", conf.GetString("settings.logger.info"))
 	if err != nil {
 		panic(errors.Wrap(err, "createServer error in creating loggers"))
 	}
 
 	// Attaching all resources to the server
 	cfg := serverImpl.ServerConfig{
-		Config: conf,
-		Logger: serverLogger,
+		Config:    conf,
+		Logger:    serverLogger,
+		Aerospike: newAerospikeClient(conf.Sub("settings.aerospike")),
 	}
 
 	return &cfg, conf.GetString("settings.server.HOST")
@@ -77,6 +78,13 @@ func main() {
 	server := serverImpl.NewServer(ctx, srvCfg)
 
 	listen, err := net.Listen("tcp", port)
+	conf := getConfig(*cfgPath)
+
+	settings := conf.Sub("settings")
+
+	if settings.InConfig("kafka") {
+		startKafkaConsumers(settings.Sub("kafka"), srvCfg.Aerospike, srvCfg.Logger)
+	}
 
 	if err != nil {
 		panic(errors.Wrap(err, "gRPC connection is not started on the address "+port))
