@@ -4,24 +4,21 @@
 # Viper also supports YAML.
 settings:
   server:
-    host: 0.0.0.0:8065
+    host: 0.0.0.0:8066
   logger:
-    info:  "/logs/intent-score/info.log"
-    error: "/logs/intent-score/error.log"
+    info:  "/Users/hari.teja/logs/intent-score/info.log"
+    error: "/Users/hari.teja/logs/intent-score/error.log"
   aerospike:
     connection-queue-size: 64
     limit-connections-queue-size: true
     hosts:
-      - "aerospike:3000"
-      - "aerospike:3001"
-      - "aerospike:3002"
-      - "aerospike:3003"
+      - "192.168.0.4:3010"
   kafka:
-    enable: true
+    enable: false
     manthan:
       real_time_data:
         bootstrap-servers:
-          - "kafka:9092"
+          - "192.168.0.4:9082"
         topics:
           - "manthan-real_time_data"
         auto-commit:  false
@@ -33,6 +30,5 @@ settings:
         partition-strategy:  "range"
         worker-count:  30
         log-bucket:  ""
-        consumer-group-id: "manthan-real_time_data"
+        consumer-group-id:  "manthan-real_time_data"
         enable: true
-

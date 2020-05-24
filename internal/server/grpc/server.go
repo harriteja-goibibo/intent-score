@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/goibibo/intent-score/internal"
-	core "github.com/goibibo/intent-score/internal/core"
+	infra "github.com/goibibo/intent-score/internal/infrastructure"
 	"github.com/goibibo/intent-score/pkg/api/grpc/health"
 
 	"github.com/spf13/viper"
@@ -15,7 +15,7 @@ import (
 type ServerConfig struct {
 	Config    *viper.Viper
 	Logger    internal.Logger
-	ScoreRepo core.ScoreRepository
+	Aerospike infra.Aerospike
 }
 
 // Server is the main struct used for gRPC server.

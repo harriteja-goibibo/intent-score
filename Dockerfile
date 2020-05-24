@@ -4,12 +4,24 @@ FROM centos:7
 #Install epel-release, debug tools, nginx, supervisor, boto packages.
 #Create required directories
 RUN \
-  yum install -y epel-release bison python-setuptools bzip2 wget make gcc git &&  \
+  yum install -y epel-release bison python-setuptools bzip2 wget make gcc gcc-c++ zlib-devel git lsof &&  \
   easy_install supervisor && \
   mkdir -p /logs/intent-score /etc/supervisord.d  && \
   yum clean all && \
   rm -f /etc/localtime && \
   ln -s /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+
+# Installing librdkafka
+RUN \
+    cd /tmp && \
+    git clone https://github.com/edenhill/librdkafka.git --branch v1.3.0 && \
+    cd librdkafka && \
+    ./configure --prefix /usr && \
+    make && \
+    make install
+
+ENV PKG_CONFIG_PATH=/usr/lib/pkgconfig
+RUN ldconfig
 
 #Install Go
 RUN \
@@ -21,7 +33,7 @@ RUN \
 
 #Set environment variables
 ENV PATH=$PATH:/usr/local/go/bin:/usr/local/goibibo/intent-score/bin
-ENV GO111MODULE=on CGO_ENABLED=0
+ENV GO111MODULE=on CGO_ENABLED=1
 
 EXPOSE 80
 #Set argument env - to receive input

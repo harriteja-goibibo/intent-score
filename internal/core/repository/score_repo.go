@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"context"
+	"github.com/goibibo/intent-score/internal/core/common"
 	infra "github.com/goibibo/intent-score/internal/infrastructure"
 )
 
@@ -14,4 +16,8 @@ func NewPromoRepo(client infra.Aerospike) (*ScoreRepo, error) {
 		client: client,
 	}
 	return &f, nil
+}
+
+func (s *ScoreRepo) SaveManthanRealTimeData(ctx context.Context, data common.RealTimeData) error {
+	return nil
 }

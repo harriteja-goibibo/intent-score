@@ -39,7 +39,7 @@ ci: lint test ## Run all the tests and code checks
 .PHONY: build
 build:  ## Build a version
 	mkdir bin
-	go build -v -o ./bin/intent-score_server ./cmd/intent-score/main.go
+	go build -v -o ./bin/intent-score_server ./cmd/intent-score
 
 .PHONY: clean
 clean: ## Remove temporary files
