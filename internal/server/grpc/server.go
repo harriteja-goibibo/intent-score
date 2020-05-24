@@ -2,6 +2,10 @@ package grpc
 
 import (
 	"context"
+	"github.com/goibibo/intent-score/internal/core"
+	"github.com/goibibo/intent-score/internal/core/repository"
+	"github.com/goibibo/intent-score/internal/impls/real_time_data"
+	"github.com/goibibo/intent-score/pkg/api/grpc/manthan"
 
 	"github.com/goibibo/intent-score/internal"
 	infra "github.com/goibibo/intent-score/internal/infrastructure"
@@ -21,6 +25,10 @@ type ServerConfig struct {
 // Server is the main struct used for gRPC server.
 type Server struct {
 	config *ServerConfig
+
+	repo struct {
+		ScoreRepo core.ScoreRepository
+	}
 }
 
 // NewServer creates new grpc server. The context is used to close all
@@ -29,6 +37,7 @@ func NewServer(ctx context.Context, cfg *ServerConfig) *Server {
 	s := Server{
 		config: cfg,
 	}
+	s.repo.ScoreRepo, _ = repository.NewScoreRepo(s.config.Aerospike)
 	return &s
 }
 
@@ -41,4 +50,9 @@ func (s *Server) PingPong(ctx context.Context, request *health.HealthCheck) (res
 	response.Value = "pong"
 
 	return response, nil
+}
+
+func (s *Server) ManthanRealTimeData(ctx context.Context, request *manthan.ManthanRealTimeData) (response *manthan.ManthanRealTimeData, err error) {
+	err = real_time_data.SaveRealTimeData(ctx, request, s.repo.ScoreRepo)
+	return new(manthan.ManthanRealTimeData), err
 }

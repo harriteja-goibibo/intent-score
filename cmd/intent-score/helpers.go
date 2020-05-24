@@ -91,7 +91,7 @@ func consumeManthanRealTimeData(realTimeData *viper.Viper, aeroClient infra.Aero
 	autoCommit := realTimeData.GetBool("auto-commit")
 
 	realTimeDataClient := newConsumerClient(realTimeData, consumerGroupID, autoCommit)
-	scoreRepo, _ := repository.NewPromoRepo(aeroClient)
+	scoreRepo, _ := repository.NewScoreRepo(aeroClient)
 	realTimeDataConsumer := manthan.NewManthanDataClient(kafka.Config{
 		Topics:                    realTimeData.GetStringSlice("topics"),
 		WorkersCountToProcessData: realTimeData.GetInt("worker-count"),

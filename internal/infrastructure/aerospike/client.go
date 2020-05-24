@@ -2,12 +2,12 @@ package aerospike
 
 import (
 	"context"
-	"sync"
-
 	aero "github.com/aerospike/aerospike-client-go"
+	aeroTypes "github.com/aerospike/aerospike-client-go/types"
 	"github.com/goibibo/intent-score/internal/infrastructure"
 	"github.com/goibibo/intent-score/internal/infrastructure/internal"
 	"github.com/pkg/errors"
+	"sync"
 )
 
 // keyPool is the buffer used for reusing aerospike's Key.
@@ -63,9 +63,18 @@ func NewAeroClient(c internal.AeroClient) (*Client, error) {
 	return &cli, nil
 }
 
+func ignoreKeyNotFoundError(err error) error {
+	if aeroErr, ok := err.(aeroTypes.AerospikeError); ok {
+		if aeroErr.ResultCode() == aeroTypes.KEY_NOT_FOUND_ERROR {
+			err = nil
+		}
+	}
+	return err
+}
+
 // OrderedListAppend appends the data to the specified bin for the input key in an ordered fashion.
 // The input is a map hence the order of execution is not guaranteed.
-func (cli *Client) OrderedListAppend(ctx context.Context, collectionName string, key infrastructure.Key, bin string, data []interface{}) (err error) {
+func (cli *Client) OrderedListAppend(ctx context.Context, key infrastructure.Key, bin string, data []interface{}) (err error) {
 
 	policy := aero.NewWritePolicy(0, 0)
 	listPolicy := aero.NewListPolicy(aero.ListOrderOrdered, aero.ListWriteFlagsDefault)
@@ -80,13 +89,44 @@ func (cli *Client) OrderedListAppend(ctx context.Context, collectionName string,
 	}
 
 	if _, setErr := cli.Client.Operate(policy, aeroKey, operations...); setErr != nil {
-		err = errors.Wrap(setErr, "Client Put error")
+		err = errors.Wrap(ignoreKeyNotFoundError(setErr), "Client Put error")
 	}
 
 	return
 }
 
-func (cli *Client) MapGetByKey(ctx context.Context, collectionName string, key infrastructure.Key, bin string, mapKey interface{}) (out interface{}, err error) {
+func (cli *Client) OrderedListGetByValueRange(ctx context.Context, key infrastructure.Key, bin string, beginValue interface{}, endValue interface{}) (out interface{}, err error) {
+
+	policy := aero.NewWritePolicy(0, 0)
+	aeroKey := cli.keyPool.Get(key.Namespace, key.SetName, key.UserKey)
+
+	operations := make([]*aero.Operation, 1)
+	operations[0] = aero.ListGetByValueRangeOp(bin, beginValue, endValue, aero.ListReturnTypeValue)
+
+	if record, getErr := cli.Client.Operate(policy, aeroKey, operations...); getErr != nil {
+		err = errors.Wrap(ignoreKeyNotFoundError(getErr), "Client OrderedListGetByValueRange error")
+		return out, err
+	} else {
+		return record.Bins[bin], err
+	}
+}
+
+func (cli *Client) OrderedListRemoveByValueList(ctx context.Context, key infrastructure.Key, bin string, value []interface{}) (out interface{}, err error) {
+	policy := aero.NewWritePolicy(0, 0)
+	aeroKey := cli.keyPool.Get(key.Namespace, key.SetName, key.UserKey)
+
+	operations := make([]*aero.Operation, 1)
+	operations[0] = aero.ListRemoveByValueListOp(bin, value, aero.ListReturnTypeCount)
+
+	if record, getErr := cli.Client.Operate(policy, aeroKey, operations...); getErr != nil {
+		err = errors.Wrap(ignoreKeyNotFoundError(getErr), "Client OrderedListRemoveByValueList error")
+		return out, err
+	} else {
+		return record.Bins[bin], err
+	}
+}
+
+func (cli *Client) MapGetByKey(ctx context.Context, key infrastructure.Key, bin string, mapKey interface{}) (out interface{}, err error) {
 
 	policy := aero.NewWritePolicy(0, 0)
 	aeroKey := cli.keyPool.Get(key.Namespace, key.SetName, key.UserKey)
@@ -95,7 +135,7 @@ func (cli *Client) MapGetByKey(ctx context.Context, collectionName string, key i
 	operations[0] = aero.MapGetByKeyOp(bin, mapKey, aero.MapReturnType.VALUE)
 
 	if record, setErr := cli.Client.Operate(policy, aeroKey, operations...); setErr != nil {
-		err = errors.Wrap(setErr, "Client MapGetByKey Operate error")
+		err = errors.Wrap(ignoreKeyNotFoundError(setErr), "Client MapGetByKey Operate error")
 		return out, err
 	} else {
 		return record.Bins[bin], nil
@@ -103,7 +143,7 @@ func (cli *Client) MapGetByKey(ctx context.Context, collectionName string, key i
 
 }
 
-func (cli *Client) MapPutByKey(ctx context.Context, collectionName string, key infrastructure.Key, bin string, mapKey interface{}, mapValue interface{}) (err error) {
+func (cli *Client) MapPutByKey(ctx context.Context, key infrastructure.Key, bin string, mapKey interface{}, mapValue interface{}) (err error) {
 
 	policy := aero.DefaultMapPolicy()
 	aeroKey := cli.keyPool.Get(key.Namespace, key.SetName, key.UserKey)
@@ -114,7 +154,7 @@ func (cli *Client) MapPutByKey(ctx context.Context, collectionName string, key i
 	writePolicy := aero.NewWritePolicy(0, 0)
 
 	if _, setErr := cli.Client.Operate(writePolicy, aeroKey, operations...); setErr != nil {
-		err = errors.Wrap(setErr, "Client MapPutByKey Operate error")
+		err = errors.Wrap(ignoreKeyNotFoundError(setErr), "Client MapPutByKey Operate error")
 	}
 
 	return
