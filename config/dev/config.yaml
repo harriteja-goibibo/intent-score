@@ -8,7 +8,9 @@ settings:
   logger:
     info:  "/logs/intent-score/info.log"
     error: "/logs/intent-score/error.log"
-    key : "12345678"
+    key : ""
+    key1: ""
+
 
   aerospike:
     connection-queue-size: 64
