@@ -10,7 +10,7 @@ settings:
     error: "/logs/intent-score/error.log"
     key : ""
     key1: ""
-    newrelic_key : "abcpqrxyz"
+    newrelic_key : ""
 
   aerospike:
     connection-queue-size: 64
