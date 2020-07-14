@@ -1,6 +1,6 @@
 package time
 
 const (
-	DateInYYYYMMDDFormat       = "20060102"
-	DateInYYYYMMDDHHMMSSFormat = "20060102132020"
+	DateTimeFormat       = "2006-01-02T15:04:05"
+	DateInYYYYMMDDFormat = "20060102"
 )

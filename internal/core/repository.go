@@ -6,5 +6,7 @@ import (
 )
 
 type ScoreRepository interface {
-	SaveManthanRealTimeData(ctx context.Context, data common.RealTimeData) error
+	GetUserData(ctx context.Context, userId string, vertical string) (common.UserHistory, error)
+	SetUserData(ctx context.Context, userId string, vertical string, userHistory common.UserHistory) (err error)
+	SaveRealTimeData(ctx context.Context, data common.RealTimeData) (common.UserData, error)
 }

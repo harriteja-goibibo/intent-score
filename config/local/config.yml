@@ -12,13 +12,13 @@ settings:
     connection-queue-size: 64
     limit-connections-queue-size: true
     hosts:
-      - "192.168.0.4:3010"
+      - "192.168.0.6:3010"
   kafka:
     enable: false
     manthan:
       real_time_data:
         bootstrap-servers:
-          - "192.168.0.4:9082"
+          - "192.168.0.6:9082"
         topics:
           - "manthan-real_time_data"
         auto-commit:  false

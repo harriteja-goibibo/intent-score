@@ -4,12 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/goibibo/intent-score/internal/core"
-	"github.com/goibibo/intent-score/internal/core/common"
-	"github.com/goibibo/intent-score/internal/helpers/time"
+	"github.com/goibibo/intent-score/internal/impls/real_time_data"
 	kafkaWrapper "github.com/goibibo/intent-score/internal/infrastructure/kafka"
 	"github.com/goibibo/intent-score/pkg/api/grpc/manthan"
-	"strconv"
-
 	"github.com/pkg/errors"
 )
 
@@ -42,24 +39,7 @@ func (c *ManthanClient) ProcessData() {
 	}
 	processedData := c.ProcessedEventData
 
-	realTimeData := common.RealTimeData{
-		Org:         processedData.GetOrg(),
-		Vertical:    processedData.GetVertical(),
-		PageHitType: processedData.GetPageType(),
-		UserId:      processedData.GetUserId(),
-		EntityId:    processedData.GetEntityId(),
-		TravelDate:  time.GetRequiredTimeFormat(processedData.GetTravelStartDate(), time.DateInYYYYMMDDFormat, time.DateInYYYYMMDDFormat),
-	}
-
-	requestDate, err := strconv.Atoi(time.GetRequiredTimeFormat(processedData.GetRequestDate(), time.DateInYYYYMMDDHHMMSSFormat, time.DateInYYYYMMDDFormat))
-	if err != nil {
-		realTimeData.RequestDate = int64(requestDate)
-	}
-	// TODO error handling
-	travelStartDate, _ := strconv.Atoi(time.GetRequiredTimeFormat(processedData.GetTravelStartDate(), time.DateInYYYYMMDDHHMMSSFormat, time.DateInYYYYMMDDFormat))
-	travelEndDate, _ := strconv.Atoi(time.GetRequiredTimeFormat(processedData.GetTravelEndDate(), time.DateInYYYYMMDDHHMMSSFormat, time.DateInYYYYMMDDFormat))
-	realTimeData.RoomNights = travelStartDate - travelEndDate
-	err = c.ScoreSetter.SaveManthanRealTimeData(context.Background(), realTimeData)
+	err := real_time_data.SaveRealTimeData(context.Background(), processedData, c.ScoreSetter)
 	if err != nil {
 		// TODO : Handle error
 	}

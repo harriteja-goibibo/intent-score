@@ -3,10 +3,12 @@ syntax = "proto3";
 package grpc;
 
 import "api/proto/grpc/health/health.proto";
+import "api/proto/grpc/manthan/manthan.proto";
 
 option go_package = "github.com/goibibo/intent-score/pkg/api/grpc";
 
 service intent_score {
     rpc PingPong(health.HealthCheck) returns (health.HealthCheck) {};
+    rpc ManthanRealTimeData(manthan.ManthanRealTimeData) returns (manthan.ManthanRealTimeData) {};
 }
 

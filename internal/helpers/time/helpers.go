@@ -2,6 +2,7 @@ package time
 
 import (
 	"github.com/pkg/errors"
+	"strconv"
 	"time"
 )
 
@@ -25,4 +26,20 @@ func GetRequiredTimeFormat(inputTime, requestFormat, respFormat string) string {
 		return ""
 	}
 	return FormatTime(respTime, respFormat)
+}
+
+func AddDays(inputTime int, requestFormat string, addDays int) (date int) {
+	requestTime := strconv.Itoa(inputTime)
+	respTime, _ := ParseTime(requestTime, requestFormat)
+	respTime = respTime.Add(time.Duration(addDays) * time.Hour * 24)
+	date, _ = strconv.Atoi(FormatTime(respTime, requestFormat))
+	return date
+}
+
+func SubstractDays(inputTime int, requestFormat string, substractDays int) (date int) {
+	requestTime := strconv.Itoa(inputTime)
+	respTime, _ := ParseTime(requestTime, requestFormat)
+	respTime = respTime.Add(-1 * time.Duration(substractDays) * time.Hour * 24)
+	date, _ = strconv.Atoi(FormatTime(respTime, requestFormat))
+	return
 }

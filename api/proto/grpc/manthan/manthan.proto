@@ -20,5 +20,4 @@ message ManthanRealTimeData {
     string travel_start_date = 7;
     // Format YYYYMMDD
     string travel_end_date = 8;
-    int64 room_nights = 9;
 }
