@@ -20,7 +20,7 @@ settings:
       # - "aerospike:3000"
       # - "aerospike:3001"
       # - "aerospike:3002"
-      - "aerospike:3003"
+#      - "aerospike:3003"
   kafka:
     enable: true
     manthan:
