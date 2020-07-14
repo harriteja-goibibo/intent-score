@@ -12,7 +12,7 @@ settings:
     key1: ""
     newrelic_key : ""
   newrelic:
-    key: "***REMOVED***"
+    key: ""
   aerospike:
     connection-queue-size: 64
     limit-connections-queue-size: true
