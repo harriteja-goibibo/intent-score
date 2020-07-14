@@ -11,7 +11,8 @@ settings:
     key : ""
     key1: ""
     newrelic_key : ""
-
+  newrelic:
+    key: "newrelickey"
   aerospike:
     connection-queue-size: 64
     limit-connections-queue-size: true
