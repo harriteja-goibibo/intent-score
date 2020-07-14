@@ -9,6 +9,7 @@ settings:
     info:  "/Users/hari.teja/logs/intent-score/info.log"
     error: "/Users/hari.teja/logs/intent-score/error.log"
     key:    "dummykey"
+    port:   "3306"
   aerospike:
     connection-queue-size: 64
     limit-connections-queue-size: true
